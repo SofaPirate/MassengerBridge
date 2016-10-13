@@ -1,0 +1,7 @@
+{
+  "showSourceIP": false,
+  "frameRate": 10,
+  "messagesByPattern": 3,
+  "inPort": 12345,
+  "messagesByTime": 10
+}

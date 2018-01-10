@@ -3,5 +3,7 @@
   "frameRate": 10,
   "messagesByPattern": 3,
   "inPort": 12345,
-  "messagesByTime": 10
+  "messagesByTime": 10,
+  "serialPort": "COM6",
+  "serialBaud": 57600
 }

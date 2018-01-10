@@ -21,11 +21,18 @@ SettingsJson settings;
 
 boolean showSourceIP;
 
-  float lineHeight = 15;
+ float lineHeight = 15;
 
 Logger netLogger;
 Logger serialLogger;
 
+  String serialPort;
+  int serialBaud;
+  
+  Serial serial;
+  
+  AsciiMassenger asciiMassenger;
+  
 void settings() {
   settings = new SettingsJson("settings.json");
   int messagesByPattern = settings.getInt("messagesByPattern", 10, 1, 50);
@@ -40,6 +47,11 @@ void settings() {
   
   netLogger = new Logger(0,h*0.5,h*0.5,messagesByPattern,messagesByTime,lineHeight);
   netLogger.header = "NET PORT : "+inPort;
+  
+   serialPort = settings.getString("serialPort", "COM1");
+  
+   serialBaud = settings.getInt("serialBaud", 57600, 9600, 115200);
+  
   
   serialLogger =  new Logger(0,0,h*0.5,messagesByPattern,messagesByTime,lineHeight);
   serialLogger.header = "SERIAL PORT : ";
@@ -58,8 +70,13 @@ void setup() {
   oscP5 = new OscP5(this, inPort);
 
   settings.save();
-
   
+  
+  
+   serial =  new Serial(this, serialPort, serialBaud);
+   
+   asciiMassenger = new AsciiMassenger(serial);
+   asciiMassenger.attach(this, "massageReceived");
 }
 
 
@@ -87,3 +104,15 @@ void oscEvent(OscMessage theOscMessage) {
   }
   netLogger.log(messageAddressPattern, messageToString);
 }
+
+ void serialEvent(Serial s) { 
+    asciiMassenger.process(s.read());
+  }
+  
+  void massageReceived() {
+    print(asciiMassenger.getAddress());
+    print(" ");
+    print(asciiMassenger.nextInt());
+    print(" ");
+    println(asciiMassenger.nextInt());
+  }

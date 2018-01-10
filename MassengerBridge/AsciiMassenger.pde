@@ -7,7 +7,7 @@ class AsciiMassenger {
   Object instance;
   String callbackName;
   boolean ready = false;
-  String massageAddr;
+  String address;
   int massageData;
   String[] words;
   int currentWord = 0;
@@ -18,20 +18,19 @@ class AsciiMassenger {
     this.serial = serial;
   }
 
-  /*
   void attach( Object sketch, String callbackName ) {
-   
-   instance = sketch;
-   
-   try {
-   callback = sketch.getClass().getMethod(callbackName );
-   } 
-   catch (ReflectiveOperationException e) {
-   print("Could not find message callback "+callbackName+".");
-   throw new RuntimeException(e);
-   }
-   }
-   */
+
+    instance = sketch;
+
+    try {
+      callback = sketch.getClass().getMethod(callbackName );
+    } 
+    catch (ReflectiveOperationException e) {
+      print("Could not find message callback "+callbackName+".");
+      throw new RuntimeException(e);
+    }
+  }
+
 
   private void reset() {
     receivedDataIndex = 0;
@@ -55,13 +54,17 @@ class AsciiMassenger {
         String rawMassage = new String(receivedDataArray, 0, receivedDataIndex);
         words = splitTokens(rawMassage);
         ready = true;
-        if ( callback != null ) {
-          try {
-            callback.invoke(instance);
-          } 
-          catch (ReflectiveOperationException e) {
-            print("Could not find massage received callback called "+callbackName+".");
-            throw new RuntimeException(e);
+        if ( words.length > 0 ) {
+          address = words[0];
+          currentWord++;
+          if ( callback != null ) {
+            try {
+              callback.invoke(instance);
+            } 
+            catch (ReflectiveOperationException e) {
+              print("Could not find massage received callback called "+callbackName+".");
+              throw new RuntimeException(e);
+            }
           }
         }
       }
@@ -81,15 +84,15 @@ class AsciiMassenger {
     }
   }
 
-/*
+  /*
   boolean checkString( String s) {
-    if ( isReady() &&  words[currentWord].equals(s) ) {
-      currentWord++;
-      return true;
-    }
-    return false;
-  }
-*/
+   if ( isReady() &&  words[currentWord].equals(s) ) {
+   currentWord++;
+   return true;
+   }
+   return false;
+   }
+   */
   int nextInt() {
 
     if ( isReady() ) {
@@ -109,7 +112,7 @@ class AsciiMassenger {
     }
     return 0;
   }
-  
-
-  
+  String getAddress() {
+    return address;
+  }
 }
